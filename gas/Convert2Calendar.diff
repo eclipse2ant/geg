@@ -1,0 +1,46 @@
+--- Convert2Calendar.gs	2021-10-22 21:40:27.905716400 +0900
++++ Convert2Calendar-1.gs	2021-10-22 21:57:07.513532600 +0900
+@@ -1,8 +1,10 @@
+-// 作成日:2021/4/24
++// 作成日:2021/5/2
+ // 作成者:Tatsuya
+ // URL:https://kogyo-kyoiku.net
+ 
+ function Convert2Calender() {
++  // カレンダー名をメッセージボックスから取得する
++  let CalendarName = Browser.inputBox("登録したいカレンダーの名前を入力してください\\n（空白の場合はデフォルトカレンダーになります）");
+   // 現在開いているシートを取得する
+   const ActiveSheet = SpreadsheetApp.getActiveSheet();
+   // 現在開いているシートの月を取得する
+@@ -11,8 +13,21 @@
+   let SheetData = ActiveSheet.getDataRange().getValues();
+   // 年度（1行A列のデータ）を取得する
+   let TargetYear = SheetData[0][0];
+-  // デフォルトのカレンダーを取得する
+-  let Calendar = CalendarApp.getDefaultCalendar();
++  // カレンダーオブジェクト格納変数を宣言
++  let Calendar;
++  if(CalendarName == ""){
++    // カレンダー名を指定されていなければ、デフォルトカレンダーを取得
++    Calendar = CalendarApp.getDefaultCalendar();
++  }else{
++    // カレンダー名を指定されていれば、そのカレンダーを取得
++    Calendar = CalendarApp.getOwnedCalendarsByName(CalendarName)[0];
++  }
++  if(Calendar==null){
++    // カレンダーが取得できなかった場合の処理
++    Browser.msgBox("カレンダー名「"+CalendarName+"」が見つかりませんでした。\\n正しい名前を入力し直してください。\\n処理を終了します。");
++    // スクリプトの終了処理
++    return;
++  }
+   // カレンダーのタイムゾーンの設定
+   Calendar.setTimeZone("Asia/Tokyo");
+   // 日程情報を検索していく処理
+@@ -27,5 +42,5 @@
+     }
+   }
+   // 処理完了表示
+-  Browser.msgBox("日程をカレンダーに出力しました。");
++  Browser.msgBox("カレンダー名「"+Calendar.getName()+"」に日程を出力しました。");
+ }
+\ No newline at end of file
